@@ -25,13 +25,28 @@ Java, Git e GitHub. Spring Boot deve entrar mais pra frente.
 
 ## Por que "BookFlow"?
 
-O nome vem do fluxo do livro dentro da biblioteca: 
+O nome vem do fluxo do livro dentro da biblioteca:
 **disponível → emprestado → devolvido → disponível de novo**
 
 É basicamente o coração do sistema
 
+## Evolução do projeto
+
+### Estrutura de usuários
+
+Comecei a modelar os usuários do sistema usando conceitos de POO. Criei a classe abstrata `Usuario`, com os atributos `id`, `nome` e `status` encapsulados, além do comportamento `inativar()`, que muda o status do usuário.
+
+O `status` usa o enum `StatusUsuario` (`ATIVO` / `INATIVO`).
+
+A partir de `Usuario`, criei `Aluno` e `Professor` por herança. Cada um tem suas próprias regras de limite de livros e prazo de empréstimo:
+
+- **Aluno**: até 5 livros, 14 dias de prazo
+- **Professor**: até 15 livros, 30 dias de prazo
+
+Os métodos `obterLimiteDeLivros()` e `obterPrazoDeEmprestimo()` são abstratos em `Usuario` cada subtipo é obrigado a implementar sua própria regra.
+
 ## Status
 
-**Em desenvolvimento, sem pressa.** 
+**Em desenvolvimento, sem pressa.**
 
 Esse README vai mudando junto com o projeto.
