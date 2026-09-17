@@ -45,6 +45,14 @@ A partir de `Usuario`, criei `Aluno` e `Professor` por herança. Cada um tem sua
 
 Os métodos `obterLimiteDeLivros()` e `obterPrazoDeEmprestimo()` são abstratos em `Usuario` cada subtipo é obrigado a implementar sua própria regra.
 
+### Estrutura de livros
+
+Criei a classe `Livro` com 5 atributos que são características de um livro: `titulo`, `genero`, `autor`, `anoDePublicacao` e `isbn`.
+
+Criei um construtor que contém todos esses atributos para serem inicializados. Depois disso fiz o teste na `Main` e instanciei um livro.
+
+Como os atributos são privados, outras classes não conseguem acessá-los diretamente. Por isso, criei métodos `get` públicos para permitir a consulta desses valores.
+
 ## Status
 
 **Em desenvolvimento, sem pressa.**

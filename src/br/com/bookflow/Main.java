@@ -22,5 +22,17 @@ public class Main {
 
         professor.inativar();
         System.out.println(professor.getStatus());
+
+        Livro livro = new Livro(
+                "Dom Casmurro",
+                "Romance",
+                "Machado de Assis",
+                1899,
+                "9788520932599");
+        System.out.println(livro.getTitulo());
+        System.out.println(livro.getGenero());
+        System.out.println(livro.getAutor());
+        System.out.println(livro.getAnoDePublicacao());
+        System.out.println(livro.getIsbn());
     }
 }
