@@ -53,6 +53,18 @@ Criei um construtor que contém todos esses atributos para serem inicializados. 
 
 Como os atributos são privados, outras classes não conseguem acessá-los diretamente. Por isso, criei métodos `get` públicos para permitir a consulta desses valores.
 
+### Estrutura de empréstimos
+
+Criei a classe `Emprestimo` com os atributos `usuario`, `livro`, `dataInicial`, `dataFinal` e `dataDevolucao`.
+
+No caso de `usuario` e `livro`, fiz uma associação com as classes `Usuario` e `Livro`. Dessa forma, o `Emprestimo` mantém uma referência para o usuário e para o livro envolvidos no empréstimo, permitindo acessar seus dados por meio dos métodos dessas classes.
+
+Para trabalhar com as datas, utilizei a API `java.time` do Java e a classe `LocalDate` para representar as datas do empréstimo e da devolução.
+
+Criei o construtor com todos os atributos, menos `dataDevolucao`, pois não sabemos quando a devolução será efetuada. Sendo assim, criei o método `devolver(LocalDate dataDevolucao)` para registrar a data em que o livro foi devolvido.
+
+Também criei getters para consultar os atributos do empréstimo e fiz testes na `Main`, instanciando as datas e verificando as informações do empréstimo e da devolução.
+
 ## Status
 
 **Em desenvolvimento, sem pressa.**

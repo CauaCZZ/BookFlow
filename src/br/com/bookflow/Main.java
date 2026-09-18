@@ -1,5 +1,7 @@
 package br.com.bookflow;
 
+import java.time.LocalDate;
+
 public class Main {
     public static void main(String[] args) {
         Aluno aluno = new Aluno(1, "Cauã");
@@ -34,5 +36,23 @@ public class Main {
         System.out.println(livro.getAutor());
         System.out.println(livro.getAnoDePublicacao());
         System.out.println(livro.getIsbn());
+
+        LocalDate dataInicial = LocalDate.of(2026, 9, 1);
+        LocalDate dataFinal = LocalDate.of(2026, 9, 15);
+
+        Emprestimo emprestimo = new Emprestimo(
+                aluno,
+                livro,
+                dataInicial,
+                dataFinal
+        );
+
+        emprestimo.devolver(LocalDate.of(2026, 9, 10));
+
+        System.out.println(emprestimo.getDataInicial());
+        System.out.println(emprestimo.getDataFinal());
+        System.out.println(emprestimo.getDataDevolucao());
+        System.out.println(emprestimo.getUsuario().getNome());
+        System.out.println(emprestimo.getLivro().getTitulo());
     }
 }
