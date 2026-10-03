@@ -54,5 +54,6 @@ public class Main {
         System.out.println(emprestimo.getDataDevolucao());
         System.out.println(emprestimo.getUsuario().getNome());
         System.out.println(emprestimo.getLivro().getTitulo());
+
     }
 }

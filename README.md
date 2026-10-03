@@ -65,6 +65,14 @@ Criei o construtor com todos os atributos, menos `dataDevolucao`, pois não sabe
 
 Também criei getters para consultar os atributos do empréstimo e fiz testes na `Main`, instanciando as datas e verificando as informações do empréstimo e da devolução.
 
+### Status do livro e regra de limite de empréstimos
+
+O `Livro` ganhou um status próprio, através do enum `StatusLivro` (`DISPONIVEL` / `EMPRESTADO`). Todo livro nasce `DISPONIVEL`, e criei os métodos `emprestar()` e `devolver()` para que o próprio livro controle essa mudança de estado sem depender de outra classe mexendo nesse valor diretamente.
+
+Também adicionei o método `podeEmprestar(int quantidadeEmprestadaAtualmente)` em `Usuario`, que verifica se o usuário ainda está dentro do limite de livros permitido para o seu tipo (`Aluno` ou `Professor`). 
+
+Essa regra ainda não está sendo usada em nenhum fluxo ela vai entrar em ação quando eu implementar a classe `Biblioteca`, responsável por coordenar livros, usuários e empréstimos.
+
 ## Status
 
 **Em desenvolvimento, sem pressa.**

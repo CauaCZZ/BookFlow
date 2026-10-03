@@ -6,6 +6,7 @@ public class Livro {
     private String autor;
     private int anoDePublicacao;
     private String isbn;
+    private StatusLivro statusLivro;
 
     public Livro(String titulo, String genero, String autor, int anoDePublicacao, String isbn) {
         this.titulo = titulo;
@@ -13,6 +14,7 @@ public class Livro {
         this.autor = autor;
         this.anoDePublicacao = anoDePublicacao;
         this.isbn = isbn;
+        this.statusLivro = StatusLivro.DISPONIVEL;
     }
 
     public String getTitulo() {
@@ -35,5 +37,15 @@ public class Livro {
         return isbn;
     }
 
+    public StatusLivro getStatusLivro() {
+        return statusLivro;
+    }
 
+    public void emprestar() {
+        this.statusLivro = StatusLivro.EMPRESTADO;
+    }
+
+    public void devolver() {
+        this.statusLivro = StatusLivro.DISPONIVEL;
+    }
 }

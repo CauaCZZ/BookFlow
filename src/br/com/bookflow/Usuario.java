@@ -27,6 +27,10 @@ public abstract class Usuario {
         return status;
     }
 
+    public boolean podeEmprestar(int quantidadeEmprestadaAtualmente){
+        return quantidadeEmprestadaAtualmente < obterLimiteDeLivros();
+    }
+
     public abstract int obterLimiteDeLivros();
     public abstract int obterPrazoDeEmprestimo();
 }
