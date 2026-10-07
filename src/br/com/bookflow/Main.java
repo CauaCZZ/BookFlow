@@ -55,5 +55,13 @@ public class Main {
         System.out.println(emprestimo.getUsuario().getNome());
         System.out.println(emprestimo.getLivro().getTitulo());
 
+        Biblioteca biblioteca = new Biblioteca();
+
+        biblioteca.cadastrarUsuario(aluno);
+        biblioteca.cadastrarLivro(livro);
+        biblioteca.emprestarLivro(aluno, livro);
+
+        System.out.println(livro.getStatusLivro());
+
     }
 }
