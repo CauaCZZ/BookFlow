@@ -31,6 +31,10 @@ public abstract class Usuario {
         return quantidadeEmprestadaAtualmente < obterLimiteDeLivros();
     }
 
+    public boolean estaAtivo() {
+        return status == StatusUsuario.ATIVO;
+    }
+
     public abstract int obterLimiteDeLivros();
     public abstract int obterPrazoDeEmprestimo();
 }

@@ -23,9 +23,21 @@ public class Biblioteca {
         usuarios.add(usuario);
     }
 
-    public void emprestarLivro(Usuario usuario, Livro livro) {
+    public Emprestimo emprestarLivro(Usuario usuario, Livro livro) {
+        if (!usuarios.contains(usuario)) {
+            throw new IllegalArgumentException("Usuário não cadastrado na biblioteca.");
+        }
+
+        if (!livros.contains(livro)) {
+            throw new IllegalArgumentException("Livro não cadastrado na biblioteca.");
+        }
+
+        if (!usuario.estaAtivo()) {
+            throw new IllegalStateException("Usuário inativo não pode realizar empréstimos.");
+        }
+
         if (livro.getStatusLivro() != StatusLivro.DISPONIVEL) {
-            return;
+            throw new IllegalStateException("Livro indisponível para empréstimo.");
         }
 
         long quantidadeEmprestimos = emprestimos.stream()
@@ -34,21 +46,30 @@ public class Biblioteca {
                 .count();
 
         if (!usuario.podeEmprestar((int) quantidadeEmprestimos)) {
-            return;
+            throw new IllegalStateException("Usuário atingiu o limite de empréstimos.");
         }
 
         LocalDate dataInicial = LocalDate.now();
         LocalDate dataFinal = dataInicial.plusDays(usuario.obterPrazoDeEmprestimo());
 
-        Emprestimo emprestimo = new Emprestimo(
-                usuario,
-                livro,
-                dataInicial,
-                dataFinal
-        );
+        Emprestimo emprestimo = new Emprestimo(usuario, livro, dataInicial, dataFinal);
 
         emprestimos.add(emprestimo);
         livro.emprestar();
+
+        return emprestimo;
     }
 
+    public void devolverLivro(Usuario usuario, Livro livro) {
+        Emprestimo emprestimo = emprestimos.stream()
+                .filter(e -> e.getUsuario() == usuario)
+                .filter(e -> e.getLivro() == livro)
+                .filter(e -> e.getDataDevolucao() == null)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Não há empréstimo ativo deste livro para este usuário."));
+
+        emprestimo.devolver(LocalDate.now());
+        livro.devolver();
+    }
 }
