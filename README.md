@@ -11,11 +11,12 @@ Por enquanto é só Java puro, construído aos poucos enquanto avanço nos estud
 * Cadastro de livros e usuários
 * Empréstimo, com validação das regras
 * Devolução
+* Busca de livros por título
 
 ## O que falta
 
 * Consulta de livros
-* Busca e filtragem
+* Busca por autor e por disponibilidade
 
 ## Tecnologias
 
@@ -75,19 +76,27 @@ Na classe `Usuario`, criei `podeEmprestar()`, que compara a quantidade de empré
 
 ### Estrutura da biblioteca
 
-Criei a classe `Biblioteca` para centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, e tem os métodos `cadastrarLivro()`, `cadastrarUsuario()`, `emprestarLivro()` e `devolverLivro()`.
+Criei a classe `Biblioteca` para centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, e tem os métodos `cadastrarLivro()`, `cadastrarUsuario()`, `emprestarLivro()`, `devolverLivro()` e `buscarLivrosPorTitulo()`.
 
 Antes de emprestar, a biblioteca confere nesta ordem: se usuário e livro estão cadastrados, se o usuário está ativo, se o livro está disponível e se o usuário não passou do limite. Pra contar os empréstimos ativos, usei `Stream` com `filter()` e `count()`. Se tudo estiver certo, cria o `Emprestimo`, calcula a data final com base no prazo do usuário e muda o status do livro para `EMPRESTADO`.
 
 O `devolverLivro()` procura o empréstimo ativo daquele usuário para aquele livro, registra a data de devolução e volta o livro para `DISPONIVEL`. Foi com ele que o ciclo do BookFlow passou a funcionar completo.
 
+O `buscarLivrosPorTitulo()` percorre o acervo com `Stream` e devolve uma lista com os livros cujo título contém o texto buscado, sem diferenciar maiúsculas de minúsculas. Se nenhum livro bater, devolve uma lista vazia em vez de `null`, pra quem chama poder percorrer o resultado direto, sem checar nada antes.
+
 **Por que exceções em vez de retornar `true`/`false`?** Na primeira versão, o `emprestarLivro()` simplesmente saía do método quando algo dava errado, e quem chamava não tinha como saber o que aconteceu. Um `boolean` resolveria só metade, porque diria que falhou sem dizer o motivo. Com exceções, cada falha carrega uma mensagem própria (livro indisponível, usuário inativo, limite atingido). Usei `IllegalArgumentException` para argumento inválido (algo que nunca foi cadastrado) e `IllegalStateException` para quando o estado do objeto não permite a ação.
+
+**Por que "contém" e não "igual" na busca?** Quem busca "casmurro" quer achar "Dom Casmurro", sem precisar lembrar o título inteiro. O custo é que a busca por "dom" também acha "Freedom". Achei esse custo aceitável: mostrar um resultado a mais incomoda pouco, mas esconder um livro que existe faz a pessoa achar que ele não está na biblioteca.
+
+**Por que a busca fica na `Biblioteca`?** Porque só ela enxerga a lista de livros (que é privada). Uma classe nova teria que receber essa lista de fora, e isso quebraria o encapsulamento.
 
 **Por que a `Biblioteca` só orquestra?** Ela pergunta pro `Usuario` e pro `Livro` se a operação é permitida, em vez de guardar as regras dentro dela. Se uma regra mudar, mexo só na classe dona dela.
 
-### Limitação conhecida
+### Limitações conhecidas
 
 Hoje as comparações de usuário e livro usam `==` e `contains()`, que comparam se é o mesmo objeto na memória. Funciona enquanto uso sempre as mesmas instâncias, mas não reconheceria dois objetos diferentes com o mesmo `id`. A solução é implementar `equals()` e `hashCode()`, que fica pra uma próxima etapa.
+
+A busca por título também não tolera erro de digitação: "casmuro" com um "r" só não acha "Dom Casmurro". Isso exigiria busca aproximada, que é mais complexa e fica pra depois.
 
 ## Status
 
