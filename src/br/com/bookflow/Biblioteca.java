@@ -72,4 +72,10 @@ public class Biblioteca {
         emprestimo.devolver(LocalDate.now());
         livro.devolver();
     }
+
+    public List<Livro> buscarLivrosPorTitulo(String titulo) {
+        return livros.stream()
+                .filter(livro -> livro.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
+                .toList();
+    }
 }
