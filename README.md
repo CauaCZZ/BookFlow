@@ -2,20 +2,20 @@
 
 > Organizando livros. Simplificando o fluxo da biblioteca.
 
-Comecei o BookFlow pensando lá na frente: quando eu chegar em Spring Boot nos estudos, quero ter uma base pronta pra aplicar o que for aprendendo, em vez de sair criando projeto do zero toda vez. Biblioteca é um domínio simples de entender: livros, usuários, empréstimos, devoluções, o que deixa mais espaço pra focar na parte técnica sem ficar preso tentando entender as regras de negócio.
+Comecei o BookFlow pensando lá na frente: quando eu chegar em Spring Boot nos estudos, quero ter uma base pronta pra aplicar o que for aprendendo, em vez de sair criando projeto do zero toda vez. Biblioteca é um domínio simples de entender (livros, usuários, empréstimos e devoluções), o que deixa mais espaço pra focar na parte técnica sem ficar preso tentando entender as regras de negócio.
 
-Por enquanto é só Java puro, construído aos poucos enquanto avanço nos estudos. A ideia é ir evoluindo o projeto junto comigo: primeiro a lógica e a estrutura básica funcionando, depois quando eu estiver lá trazer o Spring Boot pra cá.
+Por enquanto é só Java puro, construído aos poucos enquanto avanço nos estudos. A ideia é ir evoluindo o projeto junto comigo: primeiro a lógica e a estrutura básica funcionando, depois, quando eu estiver lá, trazer o Spring Boot pra cá.
 
-## O que ele faz (ou vai fazer)
+## O que já funciona
 
-* Cadastro de livros
-* Cadastro de usuários
-* Empréstimo
+* Cadastro de livros e usuários
+* Empréstimo, com validação das regras
 * Devolução
+
+## O que falta
+
 * Consulta de livros
 * Busca e filtragem
-
-Nem tudo está pronto ainda vou marcando aqui conforme for implementando.
 
 ## Tecnologias
 
@@ -26,7 +26,7 @@ Java, Collections, Streams, Git e GitHub. Spring Boot deve entrar mais pra frent
 O nome vem do fluxo do livro dentro da biblioteca:
 **disponível → emprestado → devolvido → disponível de novo**
 
-É basicamente o coração do sistema.
+É basicamente o coração do sistema, e hoje esse ciclo já funciona de ponta a ponta.
 
 ## Evolução do projeto
 
@@ -43,6 +43,8 @@ A partir de `Usuario`, criei `Aluno` e `Professor` por herança. Cada um tem sua
 
 Os métodos `obterLimiteDeLivros()` e `obterPrazoDeEmprestimo()` são abstratos em `Usuario`. Cada subtipo é obrigado a implementar sua própria regra.
 
+**Por que classe abstrata e não interface?** `Usuario` guarda estado (`id`, `nome`, `status`) e já tem comportamento pronto (`inativar()`) que `Aluno` e `Professor` aproveitam. Uma interface não guarda estado, então cada subclasse teria que repetir tudo isso.
+
 ### Estrutura de livros
 
 Criei a classe `Livro` com 5 atributos que são características de um livro: `titulo`, `genero`, `autor`, `anoDePublicacao` e `isbn`.
@@ -50,8 +52,6 @@ Criei a classe `Livro` com 5 atributos que são características de um livro: `t
 Criei um construtor que contém todos esses atributos para serem inicializados. Depois disso fiz o teste na `Main` e instanciei um livro.
 
 Como os atributos são privados, outras classes não conseguem acessá-los diretamente. Por isso, criei métodos `get` públicos para permitir a consulta desses valores.
-
-Também adicionei o `StatusLivro` para controlar se o livro está disponível ou emprestado. O status começa como `DISPONIVEL` e pode ser alterado pelos métodos `emprestar()` e `devolver()`.
 
 ### Estrutura de empréstimos
 
@@ -63,25 +63,31 @@ Para trabalhar com as datas, utilizei a API `java.time` do Java e a classe `Loca
 
 Criei o construtor com todos os atributos, menos `dataDevolucao`, pois não sabemos quando a devolução será efetuada. Sendo assim, criei o método `devolver(LocalDate dataDevolucao)` para registrar a data em que o livro foi devolvido.
 
-Também criei getters para consultar os atributos do empréstimo e fiz testes na `Main`, instanciando as datas e verificando as informações do empréstimo e da devolução.
+Também criei getters para consultar os atributos do empréstimo.
 
-### Status do livro e regra de limite de empréstimos
+### Status do livro e regras de negócio
 
-Adicionei o enum `StatusLivro` para controlar os estados do livro: `DISPONIVEL` e `EMPRESTADO`.
+Adicionei o enum `StatusLivro` (`DISPONIVEL` / `EMPRESTADO`). Todo livro nasce `DISPONIVEL`, e os métodos `emprestar()` e `devolver()` da própria classe `Livro` controlam a mudança de estado.
 
-Também criei os métodos `emprestar()` e `devolver()` na classe `Livro` para alterar o status do livro.
+Na classe `Usuario`, criei `podeEmprestar()`, que compara a quantidade de empréstimos ativos com o limite do tipo de usuário, e `estaAtivo()`, que diz se o usuário pode usar a biblioteca.
 
-Na classe `Usuario`, criei o método `podeEmprestar()` para verificar se o usuário ainda pode realizar um novo empréstimo com base na quantidade de empréstimos ativos e no limite definido para cada tipo de usuário.
+**Por que essas regras ficam dentro de `Livro` e `Usuario`?** Segui a ideia de que cada classe cuida do que sabe sobre si mesma. O livro sabe se está disponível e o usuário sabe qual é o seu limite. Assim, a regra fica em um lugar só e ninguém mexe no estado de outra classe por fora.
 
 ### Estrutura da biblioteca
 
-Criei a classe `Biblioteca` para começar a centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, além de ter métodos para cadastrar livros e usuários.
+Criei a classe `Biblioteca` para centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, e tem os métodos `cadastrarLivro()`, `cadastrarUsuario()`, `emprestarLivro()` e `devolverLivro()`.
 
-Também implementei o método `emprestarLivro()`. Antes de realizar o empréstimo, a biblioteca verifica se o livro está disponível e conta quantos empréstimos ativos o usuário possui usando `Stream`.
+Antes de emprestar, a biblioteca confere nesta ordem: se usuário e livro estão cadastrados, se o usuário está ativo, se o livro está disponível e se o usuário não passou do limite. Pra contar os empréstimos ativos, usei `Stream` com `filter()` e `count()`. Se tudo estiver certo, cria o `Emprestimo`, calcula a data final com base no prazo do usuário e muda o status do livro para `EMPRESTADO`.
 
-Depois disso, verifica se o usuário ainda está dentro do seu limite de empréstimos. Se estiver, o sistema cria um novo `Emprestimo`, calcula a data final com base no prazo do usuário, adiciona o empréstimo à lista e altera o status do livro para `EMPRESTADO`.
+O `devolverLivro()` procura o empréstimo ativo daquele usuário para aquele livro, registra a data de devolução e volta o livro para `DISPONIVEL`. Foi com ele que o ciclo do BookFlow passou a funcionar completo.
 
-Nessa etapa comecei a aplicar no BookFlow os conceitos de Collections e Streams que estudei, usando `filter()` e `count()` para consultar os empréstimos ativos.
+**Por que exceções em vez de retornar `true`/`false`?** Na primeira versão, o `emprestarLivro()` simplesmente saía do método quando algo dava errado, e quem chamava não tinha como saber o que aconteceu. Um `boolean` resolveria só metade, porque diria que falhou sem dizer o motivo. Com exceções, cada falha carrega uma mensagem própria (livro indisponível, usuário inativo, limite atingido). Usei `IllegalArgumentException` para argumento inválido (algo que nunca foi cadastrado) e `IllegalStateException` para quando o estado do objeto não permite a ação.
+
+**Por que a `Biblioteca` só orquestra?** Ela pergunta pro `Usuario` e pro `Livro` se a operação é permitida, em vez de guardar as regras dentro dela. Se uma regra mudar, mexo só na classe dona dela.
+
+### Limitação conhecida
+
+Hoje as comparações de usuário e livro usam `==` e `contains()`, que comparam se é o mesmo objeto na memória. Funciona enquanto uso sempre as mesmas instâncias, mas não reconheceria dois objetos diferentes com o mesmo `id`. A solução é implementar `equals()` e `hashCode()`, que fica pra uma próxima etapa.
 
 ## Status
 
