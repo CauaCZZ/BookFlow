@@ -12,10 +12,7 @@ Por enquanto é só Java puro, construído aos poucos enquanto avanço nos estud
 * Empréstimo, com validação das regras
 * Devolução
 * Busca de livros por título, autor, gênero e disponibilidade
-
-## O que falta
-
-* Consulta de livros
+* Consulta do acervo
 
 ## Tecnologias
 
@@ -75,7 +72,7 @@ Deixei essas regras dentro de `Livro` e `Usuario` porque segui a ideia de que ca
 
 ### Estrutura da biblioteca
 
-Criei a classe `Biblioteca` para centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, e tem os métodos `cadastrarLivro()`, `cadastrarUsuario()`, `emprestarLivro()`, `devolverLivro()` e as buscas `buscarLivrosPorTitulo()`, `buscarLivrosPorAutor()`, `buscarLivrosPorGenero()` e `buscarLivrosDisponiveis()`.
+Criei a classe `Biblioteca` para centralizar as operações do sistema. Ela mantém listas de `Livro`, `Usuario` e `Emprestimo`, e tem os métodos `cadastrarLivro()`, `cadastrarUsuario()`, `emprestarLivro()`, `devolverLivro()`, `listarLivros()` e as buscas `buscarLivrosPorTitulo()`, `buscarLivrosPorAutor()`, `buscarLivrosPorGenero()` e `buscarLivrosDisponiveis()`.
 
 A `Biblioteca` só orquestra: ela pergunta pro `Usuario` e pro `Livro` se a operação é permitida, em vez de guardar as regras dentro dela. Se uma regra mudar, mexo só na classe dona dela.
 
@@ -95,6 +92,8 @@ Todas as buscas ficam na `Biblioteca` porque só ela enxerga a lista de livros (
 
 Ficaram de fora as buscas por ISBN e por ano. O ISBN identifica um livro só, então pede comparação exata e outro tipo de retorno (um livro, não uma lista). O ano é um número, e o `contains()` não se aplica a ele. Os dois ficam pra uma próxima etapa.
 
+O `listarLivros()` devolve o acervo inteiro, mas dentro de uma lista que não aceita alteração (`Collections.unmodifiableList`). Se eu devolvesse a própria lista `livros`, qualquer classe de fora poderia chamar `clear()` ou `add()` nela e mexer no acervo sem passar pela `Biblioteca`, mesmo com o campo sendo privado. Com a lista protegida, quem tenta alterar recebe um `UnsupportedOperationException`. Preferi isso a devolver uma cópia porque a cópia não avisa nada (a alteração se perde em silêncio), ocupa memória a cada consulta e fica desatualizada se o acervo mudar depois.
+
 ### Limitações conhecidas
 
 Hoje as comparações de usuário e livro usam `==` e `contains()`, que comparam se é o mesmo objeto na memória. Funciona enquanto uso sempre as mesmas instâncias, mas não reconheceria dois objetos diferentes com o mesmo `id`. A solução é implementar `equals()` e `hashCode()`, que fica pra uma próxima etapa.
@@ -102,6 +101,8 @@ Hoje as comparações de usuário e livro usam `==` e `contains()`, que comparam
 A busca por título também não tolera erro de digitação: "casmuro" com um "r" só não acha "Dom Casmurro". Isso exigiria busca aproximada, que é mais complexa e fica pra depois.
 
 Os quatro métodos de busca repetem o mesmo começo (`livros.stream().filter(...).toList()`), mudando só a condição. Deixei assim de propósito, por ser simples de ler no tamanho atual do projeto. Quando eu estudar uma forma de passar a condição como parâmetro, volto aqui pra reduzir essa repetição.
+
+A lista devolvida por `listarLivros()` não pode ser alterada, mas os livros dentro dela são os objetos reais. Quem consulta ainda consegue chamar `livro.emprestar()` direto, sem passar pela `Biblioteca`. Pro tamanho atual do projeto aceitei isso.
 
 ## Status
 
