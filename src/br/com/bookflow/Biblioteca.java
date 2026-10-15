@@ -2,6 +2,7 @@ package br.com.bookflow;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Biblioteca {
@@ -95,6 +96,10 @@ public class Biblioteca {
         return livros.stream()
                 .filter(livro -> livro.getStatusLivro() == StatusLivro.DISPONIVEL)
                 .toList();
+    }
+
+    public List<Livro> listarLivros() {
+        return Collections.unmodifiableList(livros);
     }
 
 }

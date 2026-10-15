@@ -38,5 +38,7 @@ public class Main {
         System.out.println(biblioteca.buscarLivrosDisponiveis().size());
         biblioteca.emprestarLivro(aluno, livro);
         System.out.println(biblioteca.buscarLivrosDisponiveis().size());
+
+        System.out.println(biblioteca.listarLivros().size());
     }
 }
