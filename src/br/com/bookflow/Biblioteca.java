@@ -78,4 +78,23 @@ public class Biblioteca {
                 .filter(livro -> livro.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
                 .toList();
     }
+
+    public List<Livro> buscarLivrosPorAutor(String autor) {
+        return livros.stream()
+                .filter(livro -> livro.getAutor().toLowerCase().contains(autor.toLowerCase()))
+                .toList();
+    }
+
+    public List<Livro> buscarLivrosPorGenero(String genero) {
+        return livros.stream()
+                .filter(livro -> livro.getGenero().toLowerCase().contains(genero.toLowerCase()))
+                .toList();
+    }
+
+    public List<Livro> buscarLivrosDisponiveis() {
+        return livros.stream()
+                .filter(livro -> livro.getStatusLivro() == StatusLivro.DISPONIVEL)
+                .toList();
+    }
+
 }

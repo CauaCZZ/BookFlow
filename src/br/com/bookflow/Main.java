@@ -32,5 +32,11 @@ public class Main {
 
         System.out.println(biblioteca.buscarLivrosPorTitulo("CASMURRO").size());
         System.out.println(biblioteca.buscarLivrosPorTitulo("quincas").size());
+
+        System.out.println(biblioteca.buscarLivrosPorAutor("machado").size());
+        System.out.println(biblioteca.buscarLivrosPorGenero("ROMANCE").size());
+        System.out.println(biblioteca.buscarLivrosDisponiveis().size());
+        biblioteca.emprestarLivro(aluno, livro);
+        System.out.println(biblioteca.buscarLivrosDisponiveis().size());
     }
 }
